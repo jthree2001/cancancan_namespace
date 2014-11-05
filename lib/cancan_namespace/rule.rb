@@ -29,7 +29,7 @@ module CanCanNamespace
     end
     
     def matches_context(context)
-      (context.nil? && @contexts.empty?) || (context && @contexts.include?(context.to_s))
+      (@contexts.empty?) || (context && @contexts.map { |x| Array(context).collect{|i| i.to_s}.include? x }.uniq == [true])
     end
   end
 end
