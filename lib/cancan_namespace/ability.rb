@@ -21,7 +21,7 @@ module CanCanNamespace
     attr_accessor :context
 
     def can?(action, subject, *extra_args)
-      context = @context
+      #context = @context
       if extra_args.last.kind_of?(Hash) && extra_args.last.has_key?(:context)
         context = extra_args.pop[:context]
       end
@@ -40,12 +40,16 @@ module CanCanNamespace
       rules << CanCanNamespace::Rule.new(false, action, subject, conditions, block)
     end
     
+    def model_adapter(model_class, action)
+     adapter_class = CanCan::ModelAdapters::AbstractAdapter.adapter_class(model_class)
+     adapter_class.new(model_class, relevant_rules_for_query(action, model_class))
+    end
     private
     
       # Returns an array of Rule instances which match the action and subject
       # This does not take into consideration any hash conditions or block statements
       def relevant_rules(action, subject, context = nil)
-        context ||= @context
+        #context ||= @context
         rules.reverse.select do |rule|
           rule.expanded_actions = expand_actions(rule.actions)
           rule.relevant? action, subject, context
@@ -56,6 +60,14 @@ module CanCanNamespace
         relevant_rules(action, subject, context).each do |rule|
           if rule.only_raw_sql?
             raise Error, "The can? and cannot? call cannot be used with a raw sql 'can' definition. The checking code cannot be determined for #{action.inspect} #{subject.inspect}"
+          end
+        end
+      end
+      def relevant_rules_for_query(action, subject, context = nil)
+        context ||= @context
+        relevant_rules(action, subject, context).each do |rule|
+          if rule.only_block?
+            raise Error, "The accessible_by call cannot be used with a block 'can' definition. The SQL cannot be determined for #{action.inspect} #{subject.inspect}"
           end
         end
       end
