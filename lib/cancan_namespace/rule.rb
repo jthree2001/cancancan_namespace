@@ -9,10 +9,10 @@ module CanCanNamespace
     # of conditions and the last one is the block passed to the "can" call.
     def initialize(base_behavior, action, subject, conditions, block)
       if conditions.kind_of?(Hash) && conditions.has_key?(:context)
-        @contexts = [conditions.delete(:context)].flatten.map(&:to_s)
+        @contexts = [conditions.delete(:context)].flatten.map(&:to_sym)
         conditions = nil if conditions.keys.empty?
       else
-        @contexts = []
+        @contexts = [:none].flatten.map(&:to_sym)
       end
       
       super
@@ -29,7 +29,7 @@ module CanCanNamespace
     end
     
     def matches_context(context)
-      (@contexts.empty? && context == nil) || (context && @contexts.map { |x| Array(context).collect{|i| i.to_s}.include? x }.uniq == [true])    
+      (context && @contexts.map { |x| context.include? x }.uniq == [true])    
     end
   end
 end

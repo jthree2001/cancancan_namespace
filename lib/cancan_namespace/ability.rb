@@ -23,7 +23,10 @@ module CanCanNamespace
     def can?(action, subject, *extra_args)
       #context = @context
       if extra_args.last.kind_of?(Hash) && extra_args.last.has_key?(:context)
-        context = extra_args.pop[:context]
+        args = extra_args.pop[:context]
+        context = [args].flatten.map(&:to_sym)
+      else
+        context = [:none].flatten.map(&:to_sym)
       end
       
       match = relevant_rules_for_match(action, subject, context).detect do |rule|
@@ -40,9 +43,10 @@ module CanCanNamespace
       rules << CanCanNamespace::Rule.new(false, action, subject, conditions, block)
     end
     
-    def model_adapter(model_class, action)
+    def model_adapter(model_class, action, context=nil)
+     context = context==nil ? [:none].flatten.map(&:to_sym) : [context].flatten.map(&:to_sym)
      adapter_class = CanCan::ModelAdapters::AbstractAdapter.adapter_class(model_class)
-     adapter_class.new(model_class, relevant_rules_for_query(action, model_class))
+     adapter_class.new(model_class, relevant_rules_for_query(action, model_class, context))
     end
     private
     
