@@ -1,4 +1,4 @@
-require 'cancan'
+require 'cancancan'
 require 'cancan_namespace/ability'
 require 'cancan_namespace/rule'
 require 'cancan_namespace/controller_resource'
