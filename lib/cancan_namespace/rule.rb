@@ -31,5 +31,9 @@ module CanCanNamespace
     def matches_context(context)
       (context && @contexts.map { |x| context.include? x }.uniq == [true])    
     end
+    
+    def only_raw_sql?
+      @block.nil? && !conditions_empty? && !@conditions.kind_of?(Hash)
+    end
   end
 end
