@@ -63,7 +63,7 @@ module CanCanNamespace
       def relevant_rules_for_match(action, subject, context = nil)
         relevant_rules(action, subject, context).each do |rule|
           if rule.only_raw_sql?
-            raise Error, "The can? and cannot? call cannot be used with a raw sql 'can' definition. The checking code cannot be determined for #{action.inspect} #{subject.inspect}"
+            raise Exception.new "The can? and cannot? call cannot be used with a raw sql 'can' definition. The checking code cannot be determined for #{action.inspect} #{subject.inspect}"
           end
         end
       end
@@ -71,7 +71,7 @@ module CanCanNamespace
         context ||= @context
         relevant_rules(action, subject, context).each do |rule|
           if rule.only_block?
-            raise Error, "The accessible_by call cannot be used with a block 'can' definition. The SQL cannot be determined for #{action.inspect} #{subject.inspect}"
+            raise Exception.new "The accessible_by call cannot be used with a block 'can' definition. The SQL cannot be determined for #{action.inspect} #{subject.inspect}"
           end
         end
       end
